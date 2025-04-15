@@ -1,0 +1,10 @@
+{
+  "packageManager": "yarn@4.9.1",
+  "scripts": {
+    "db:migrate": "npx prisma migrate dev --name ",
+    "db:build": "npx prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "6.6.0"
+  }
+}

@@ -1,0 +1,60 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Seat {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  manufacturer_id Int
+  name            String   @db.VarChar(512)
+  slug            String   @db.VarChar(64)
+  isize           Boolean  @default(false)
+  r44             Boolean  @default(true)
+  amazon_asin     String?  @db.VarChar(24)
+  groupe_age      String?  @db.VarChar(10)
+  adac_seat_id    Int?
+  published       Boolean  @default(false)
+
+  manufacturer Manufacturer @relation(fields: [manufacturer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "seat_manufacturer_id_fkey")
+  prices       Price[]
+  adac_seat    AdacSeat?    @relation(fields: [adac_seat_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Manufacturer {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @db.VarChar(128)
+  slug      String   @db.VarChar(32)
+  published Boolean  @default(false)
+
+  seats Seat[]
+}
+
+model Price {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  amount    Float
+  currency  String   @db.VarChar(3) @default("EUR")
+  seat_id   Int
+
+  seat Seat @relation(fields: [seat_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model AdacSeat {
+  id                Int       @id @default(autoincrement())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  url               String    @db.VarChar(1024)
+  rating_safety     Float?
+  rating_easeofuse  Float?
+  rating_ergonomics Float?
+  rating_pollutants Float?
+  rating_overall    Float?
+  test_date         DateTime?
+
+  seats Seat[]
+}
